@@ -1,0 +1,27 @@
+{
+  "name": "randomnumberservice",
+  "version": "1.0.0",
+  "main": "randomNumberService.js",
+  "scripts": {
+    "start": "node ./randomNumberService.js",
+    "debug": "node ./randomNumberService.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "openshift": "nodeshift --expose --dockerImage=registry.access.redhat.com/rhscl/ubi8/nodejs-22"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "REST API for generating random numbers based on a seed",
+  "dependencies": {
+    "express": "^4.18.2",
+    "seedrandom": "^3.0.5",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodeshift": "^13.0.0"
+  },
+  "files": [
+    "package.json",
+    "randomNumberService.js"
+  ]
+}

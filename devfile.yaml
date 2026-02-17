@@ -1,0 +1,94 @@
+commands:
+- exec:
+    commandLine: npm install
+    component: runtimesvc
+    group:
+      isDefault: true
+      kind: build
+    workingDir: ${PROJECT_SOURCE}
+  id: install
+- exec:
+    commandLine: npm start
+    component: runtimesvc
+    group:
+      isDefault: true
+      kind: run
+    workingDir: ${PROJECT_SOURCE}
+  id: run
+- exec:
+    commandLine: npm run debug
+    component: runtimesvc
+    group:
+      isDefault: true
+      kind: debug
+    workingDir: ${PROJECT_SOURCE}
+  id: debug
+- exec:
+    commandLine: npm test
+    component: runtimesvc
+    group:
+      isDefault: true
+      kind: test
+    workingDir: ${PROJECT_SOURCE}
+  id: test
+- id: deploy
+  composite:
+    commands:
+    - install
+    - run
+    group:
+      kind: deploy
+      isDefault: true
+components:
+- container:
+    args:
+    - tail
+    - -f
+    - /dev/null
+    endpoints:
+    - name: port-3000-tcp
+      protocol: tcp
+      targetPort: 3000
+    env:
+    - name: DEBUG_PORT
+      value: "5858"
+    image: registry.access.redhat.com/ubi8/nodejs-18:1-32
+    memoryLimit: 1024Mi
+    mountSources: true
+  name: runtimesvc
+- name: randomnumberservice-route
+  kubernetes:
+    inlined: |
+      apiVersion: route.openshift.io/v1
+      kind: Route
+      metadata:
+        name: randomnumberservice
+      spec:
+        to:
+          kind: Service
+          name: randomnumberservice-app   # must match your Service name
+        port:
+          targetPort: 3000    # must match the Service port or targetPort
+        tls:
+          termination: edge  
+          insecureEdgeTerminationPolicy: Redirect
+metadata:
+  description: Node.js 18 application
+  displayName: Node.js runtimesvc
+  icon: https://raw.githubusercontent.com/devfile-samples/devfile-stack-icons/main/node-js.svg
+  language: JavaScript
+  name: randomnumberservice
+  projectType: Node.js
+  tags:
+  - Node.js
+  - Express
+  - ubi8
+  version: 2.2.1
+schemaVersion: 2.2.2
+starterProjects:
+- git:
+    checkoutFrom:
+      revision: main
+    remotes:
+      origin: https://github.com/nodeshift-starters/devfile-sample.git
+  name: nodejs-starter
